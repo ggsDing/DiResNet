@@ -1,3 +1,4 @@
+#model with fixed weight to generate direction reference maps
 import torch.nn as nn
 from torch.nn import functional as F
 import math
@@ -43,7 +44,7 @@ def Generate_kernels(ksize, Index_list):
     return kernels
 
 class DirectionNet(nn.Module):
-    def __init__(self, in_channels=1, rwidth=1, rescale=True):
+    def __init__(self, in_channels=1, rwidth=7, rescale=False):
         super(DirectionNet, self).__init__()
         self.rescale = rescale
         ksize = rwidth*9
@@ -84,11 +85,13 @@ class DirectionNet(nn.Module):
                 
         return reduced_map
     
-    def forward(self, x):        
+    def forward(self, x):      
         if self.rescale:
             x = F.interpolate(x, scale_factor=1/8, mode='area')
         out = self.DConv(x)
         out = self.reduce_direction(out, num_directions=4)
         out = torch.round(self.avg(out))
-        return out*x
+        out = out*x
+        _, out = torch.max(out, dim=1)
+        return out.long()
         
