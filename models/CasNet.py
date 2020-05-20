@@ -1,3 +1,4 @@
+#An implementation of CasNet in 'Automatic road detection and centerline extraction via cascaded end-to-end convolutional neural network'
 import torch
 from torch import nn
 
