@@ -1,3 +1,4 @@
+#An implementation of ResUNet in 'Road extraction by deep residual unet'
 import torch
 import torch.nn as nn
 import torchvision
