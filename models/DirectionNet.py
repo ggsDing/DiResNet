@@ -4,7 +4,6 @@ from torch.nn import functional as F
 import math
 import torch
 import numpy as np
-from torch.nn.modules.utils import _pair, _quadruple
 
 def GenerateTemplate(ksize, rwidth):
     r = int((ksize-1)/2)
