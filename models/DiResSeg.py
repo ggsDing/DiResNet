@@ -1,17 +1,11 @@
 import torch.nn as nn
 from torch.nn import functional as F
-from torchvision import models
-import math
-import torch.utils.model_zoo as model_zoo
 import torch
 import numpy as np
 from utils import initialize_weights
 #from models.FCN_8s import FCN
 from models.FCN_8s import FCN_res18a as FCN
 #from models.FCN_16s import FCN_res34a as FCN
-
-import functools
-import sys, os
 
 BN_MOMENTUM = 0.01
 
