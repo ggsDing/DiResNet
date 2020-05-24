@@ -5,6 +5,7 @@ import math
 import torch
 import numpy as np
 
+# Dynamically generating templates with fixed weight to detect local directions on binary road maps.
 def GenerateTemplate(ksize, rwidth):
     r = int((ksize-1)/2)
     step = np.arctan(rwidth/r)
@@ -42,11 +43,17 @@ def Generate_kernels(ksize, Index_list):
         print('\n')
     return kernels
 
+
+# Input: binary ground truth road maps. Output: Road direction reference maps (for multi-class segmentation).
+# rwidth and range_detect should be selected based on the minimum and maximum width of the road datasets.
+# rescale: whether to generate rescaled road direction maps.
+# For datasets with wide roads, choose large range_detect.
+
 class DirectionNet(nn.Module):
-    def __init__(self, in_channels=1, rwidth=7, rescale=False):
+    def __init__(self, in_channels=1, rwidth=7, range_detect=9, rescale=False):
         super(DirectionNet, self).__init__()
         self.rescale = rescale
-        ksize = rwidth*9
+        ksize = rwidth * range_detect
         r = int((ksize-1)/2)
         Index_list, Direction_list = GenerateTemplate(ksize, rwidth)
         print('Direction nums: %d'%len(Direction_list))
@@ -54,7 +61,6 @@ class DirectionNet(nn.Module):
         self.DConv = nn.Conv2d(1, len(Direction_list), kernel_size=ksize, stride=1, padding=r, bias=False)
         self.mask_weight(Index_list)
         self.avg = nn.MaxPool2d(kernel_size=3, stride=1, padding=1)
-        #self.DConv.weight.data = self.mask
     
     def mask_weight(self, Index_List):
         out_c, in_c, h, w = self.DConv.weight.data.shape
@@ -65,6 +71,7 @@ class DirectionNet(nn.Module):
                     mask[j, i, idx[0], idx[1]] = 1
         self.DConv.weight.data = mask
     
+    # Reduce the directions to 4 (num_directions) major ounes.
     def reduce_direction(self, direction_map, num_directions):
         b, c, h, w = direction_map.size()
         pi = 3.14159265359
