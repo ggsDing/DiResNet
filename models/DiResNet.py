@@ -130,4 +130,4 @@ class FCN_Ref(nn.Module):
         #DS = aux_d[:,1:2,:,:] + aux_d[:,2:3,:,:] + aux_d[:,3:4,:,:] + aux_d[:,4:5,:,:]
         aux_rf = self.Ref(out)
         
-        return out, aux_s aux_d, aux_rf
+        return out, aux_s, aux_d, aux_rf
